@@ -1,16 +1,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend, ReferenceLine } from "recharts";
+import logo from "./logo.png";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const API_BASE = "http://localhost:8000";
 
 const VEHICLE_TYPES = [
-  { value: "BEV", label: "Battery Electric", icon: "⚡", color: "#00e5ff" },
-  { value: "PHEV", label: "Plug-in Hybrid", icon: "🔌", color: "#69ff47" },
-  { value: "HEV", label: "Hybrid", icon: "♻️", color: "#ffd740" },
-  { value: "ICEV-p", label: "Petrol ICE", icon: "⛽", color: "#ff6b6b" },
-  { value: "ICEV-d", label: "Diesel ICE", icon: "🏭", color: "#ff9a3c" },
+  { value: "BEV", label: "Battery Electric", color: "#00e5ff" },
+  { value: "PHEV", label: "Plug-in Hybrid", color: "#69ff47" },
+  { value: "HEV", label: "Hybrid", color: "#ffd740" },
+  { value: "ICEV-p", label: "Petrol ICE", color: "#ff6b6b" },
+  { value: "ICEV-d", label: "Diesel ICE", color: "#ff9a3c" },
 ];
 
 const GRID_PRESETS = [
@@ -196,16 +197,16 @@ export default function App() {
   // The best vehicle's curve is the same across all pairs — we only need it once
   const lineData = results?.break_even
     ? results.break_even.years_range.map((y, i) => {
-        const row = { year: `Yr ${y}` };
-        // Best vehicle curve (same in every pair — take from first pair)
-        row[results.break_even.best_vehicle] =
-          results.break_even.pairs[0].yearly_best_cumulative[i];
-        // Each comparison vehicle's curve
-        results.break_even.pairs.forEach((pair) => {
-          row[pair.comparison_vehicle] = pair.yearly_comparison_cumulative[i];
-        });
-        return row;
-      })
+      const row = { year: `Yr ${y}` };
+      // Best vehicle curve (same in every pair — take from first pair)
+      row[results.break_even.best_vehicle] =
+        results.break_even.pairs[0].yearly_best_cumulative[i];
+      // Each comparison vehicle's curve
+      results.break_even.pairs.forEach((pair) => {
+        row[pair.comparison_vehicle] = pair.yearly_comparison_cumulative[i];
+      });
+      return row;
+    })
     : null;
 
   // Collect all break-even years across pairs for reference lines
@@ -219,10 +220,10 @@ export default function App() {
 
   const pieData = bestResult
     ? [
-        { name: "Manufacturing", value: bestResult.manufacturing },
-        { name: "Use Phase", value: bestResult.use_phase },
-        { name: "Disposal", value: bestResult.disposal },
-      ]
+      { name: "Manufacturing", value: bestResult.manufacturing },
+      { name: "Use Phase", value: bestResult.use_phase },
+      { name: "Disposal", value: bestResult.disposal },
+    ]
     : [];
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -255,19 +256,19 @@ export default function App() {
         background: "rgba(255,255,255,0.02)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{
+          <img src={logo} alt="Logo" style={{
             width: 36, height: 36, borderRadius: 10,
-            background: "linear-gradient(135deg, #a78bfa, #38bdf8)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 18,
-          }}>🌍</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.02em" }}>Carbon Compare</div>
-            <div style={{ fontSize: 11, color: "#6b7280", letterSpacing: "0.05em" }}>LIFECYCLE VEHICLE EMISSIONS ENGINE</div>
-          </div>
+            objectFit: "cover",
+          }} />
+
+        </div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-0.02em", textAlign: "center" }}>CarbonLens</div>
+          <div style={{ fontSize: 11, color: "#6b7280", letterSpacing: "0.05em" }}>LIFECYCLE VEHICLE EMISSIONS ENGINE</div>
+
         </div>
         <div style={{
-          fontSize: 11, color: "#4b5563",
+          fontSize: 11, color: "#e4e7ecff",
           background: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.06)",
           borderRadius: 6, padding: "4px 10px",
@@ -540,7 +541,7 @@ export default function App() {
                         <XAxis dataKey="name" stroke="#4b5563" tick={{ fill: "#9ca3af", fontSize: 12 }} />
                         <YAxis stroke="#4b5563" tick={{ fill: "#9ca3af", fontSize: 11 }}
                           tickFormatter={(v) => fmtTonne(v)} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255, 255, 255, 0.04)" }} />
                         <Legend wrapperStyle={{ color: "#9ca3af", fontSize: 12 }} />
                         <Bar dataKey="Manufacturing" stackId="a" fill={PIE_COLORS.manufacturing} radius={[0, 0, 0, 0]} />
                         <Bar dataKey="Use Phase" stackId="a" fill={PIE_COLORS.use_phase} />
